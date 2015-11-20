@@ -13,6 +13,13 @@ env:
 services:
     - docker
 
+before_script:
+    # build image
+    - docker-compose build camunda-h2
+    # display images
+    - docker images
+
+
 script:
     # start and test h2 image
     - docker-compose up -d camunda-h2
@@ -26,14 +33,11 @@ script:
     - docker-compose kill
     - docker-compose rm -f
 
-    # start mysql image
+    # start and test mysql image
     - docker-compose up -d camunda-mysql
     - ./test-container.sh
     - docker-compose kill
     - docker-compose rm -f
-
-    # display images
-    - docker images
 
     # tag images
     - docker tag $BUILD $IMAGE:SNAPSHOT

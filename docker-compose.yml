@@ -5,7 +5,10 @@ camunda-h2:
         - "8080:8080"
 
 camunda-postgresql:
-    extends: camunda-h2
+    build: .
+    container_name: camunda
+    ports:
+        - "8080:8080"
     environment:
         - DB_DRIVER=org.postgresql.Driver
         - DB_URL=jdbc:postgresql://db:5432/camunda
@@ -15,7 +18,10 @@ camunda-postgresql:
         - postgresql:db
 
 camunda-mysql:
-    extends: camunda-h2
+    build: .
+    container_name: camunda
+    ports:
+        - "8080:8080"
     environment:
         - DB_DRIVER=com.mysql.jdbc.Driver
         - DB_URL=jdbc:mysql://db:3306/process-engine
