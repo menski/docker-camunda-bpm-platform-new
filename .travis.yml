@@ -16,19 +16,19 @@ services:
 script:
     # start and test h2 image
     - docker-compose up -d camunda-h2
-    - test-container.sh
+    - ./test-container.sh
     - docker-compose kill
     - docker-compose rm -f
 
     # start and test postgresql image
     - docker-compose up -d camunda-postgresql
-    - test-container.sh
+    - ./test-container.sh
     - docker-compose kill
     - docker-compose rm -f
 
     # start mysql image
     - docker-compose up -d camunda-mysql
-    - test-container.sh
+    - ./test-container.sh
     - docker-compose kill
     - docker-compose rm -f
 
