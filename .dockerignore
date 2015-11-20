@@ -1,0 +1,7 @@
+*.md
+LICENSE
+.gitignore
+.travis.yml
+.git
+docker-compose.yml
+test-container.sh

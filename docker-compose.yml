@@ -1,0 +1,39 @@
+camunda-h2:
+    build: .
+    container_name: camunda
+    ports:
+        - "8080:8080"
+
+camunda-postgresql:
+    extends: camunda-h2
+    environment:
+        - DB_DRIVER=org.postgresql.Driver
+        - DB_URL=jdbc:postgresql://db:5432/camunda
+        - DB_USERNAME=camunda
+        - DB_PASSWORD=camunda
+    links:
+        - postgresql:db
+
+camunda-mysql:
+    extends: camunda-h2
+    environment:
+        - DB_DRIVER=com.mysql.jdbc.Driver
+        - DB_URL=jdbc:mysql://db:3306/process-engine
+        - DB_USERNAME=camunda
+        - DB_PASSWORD=camunda
+    links:
+        - mysql:db
+
+postgresql:
+    image: postgres
+    environment:
+        - POSTGRES_USER=camunda
+        - POSTGRES_PASSWORD=camunda
+
+mysql:
+    image: mysql
+    environment:
+        - MYSQL_ROOT_PASSWORD=camunda
+        - MYSQL_USER=camunda
+        - MYSQL_PASSWORD=camunda
+        - MYSQL_DATABASE=process-engine

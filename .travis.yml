@@ -1,0 +1,54 @@
+language: generic
+
+sudo: required
+
+env:
+    global:
+        - VERSION=7.4.0
+        - SERVER=tomcat
+        - BUILD=camunda_camunda-h2
+        - IMAGE=menski/test-travis-docker
+        - COMPOSE_PROJECT_NAME=camunda
+
+services:
+    - docker
+
+script:
+    # start and test h2 image
+    - docker-compose up -d camunda-h2
+    - test-container.sh
+    - docker-compose kill
+    - docker-compose rm -f
+
+    # start and test postgresql image
+    - docker-compose up -d camunda-postgresql
+    - test-container.sh
+    - docker-compose kill
+    - docker-compose rm -f
+
+    # start mysql image
+    - docker-compose up -d camunda-mysql
+    - test-container.sh
+    - docker-compose kill
+    - docker-compose rm -f
+
+    # display images
+    - docker images
+
+    # tag images
+    - docker tag $BUILD $IMAGE:SNAPSHOT
+    - docker tag $BUILD $IMAGE:$VERSION-SNAPSHOT
+    - docker tag $BUILD $IMAGE:$SERVER-SNAPSHOT
+    - docker tag $BUILD $IMAGE:$SERVER-$VERSION-SNAPSHOT
+
+    # display images
+    - docker images
+
+after_success:
+    # login to docker hub
+    - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+    # push images
+    - docker push $IMAGE:SNAPSHOT
+    - docker push $IMAGE:7.4.0-SNAPSHOT
+    - docker push $IMAGE:tomcat-SNAPSHOT
+    - docker push $IMAGE:7.4.0-tomcat-SNAPSHOT
