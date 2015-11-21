@@ -55,6 +55,6 @@ after_success:
     - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
     # push images
     - docker push $IMAGE:SNAPSHOT
-    - docker push $IMAGE:7.4.0-SNAPSHOT
-    - docker push $IMAGE:tomcat-SNAPSHOT
-    - docker push $IMAGE:7.4.0-tomcat-SNAPSHOT
+    - docker push $IMAGE:$VERSION-SNAPSHOT
+    - docker push $IMAGE:$SERVER-SNAPSHOT
+    - docker push $IMAGE:$SERVER-$VERSION-SNAPSHOT
