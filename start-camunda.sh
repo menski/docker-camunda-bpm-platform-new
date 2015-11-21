@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SERVER_CONFIG="/camunda/standalone/configuration/standalone.xml"
-NAMESPACES="-N d=urn:jboss:domain:datasources:2.0"
+NAMESPACES="-N d=urn:jboss:domain:datasources:1.1"
 
 DB_DRIVER=${DB_DRIVER:-h2}
 DB_URL=${DB_URL:-jdbc:h2:./camunda-h2-dbs/process-engine;DB_CLOSE_DELAY=-1;MVCC=TRUE;DB_CLOSE_ON_EXIT=FALSE}

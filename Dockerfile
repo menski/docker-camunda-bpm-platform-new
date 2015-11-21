@@ -10,9 +10,9 @@ RUN apt-get update && \
     rm -rf /var/cache/* /var/lib/apt/lists/*
 
 # intall oracle jre
-ENV JAVA_VERSION_MAJOR=8 \
-    JAVA_VERSION_MINOR=66 \
-    JAVA_VERSION_BUILD=17 \
+ENV JAVA_VERSION_MAJOR=7 \
+    JAVA_VERSION_MINOR=80 \
+    JAVA_VERSION_BUILD=15 \
     JAVA_PACKAGE=server-jre \
     JAVA_HOME=/jre
 
@@ -36,8 +36,8 @@ CMD ["/bin/start-camunda.sh"]
 # nexus to download artifacts
 ENV NEXUS=https://app.camunda.com/nexus/service/local/artifact/maven/content?r=public \
 # camunda artifact
-    GROUP=org.camunda.bpm.wildfly \
-    ARTIFACT=camunda-bpm-wildfly \
+    GROUP=org.camunda.bpm.jboss \
+    ARTIFACT=camunda-bpm-jboss \
     VERSION=7.4.0-SNAPSHOT \
 # mysql artifact
     MYSQL_GROUP=mysql \
@@ -48,11 +48,11 @@ ENV NEXUS=https://app.camunda.com/nexus/service/local/artifact/maven/content?r=p
     POSTGRESQL_ARTIFACT=postgresql \
     POSTGRESQL_VERSION=9.3-1102-jdbc4
 
-# wildfly modules
+# jboss modules
 ENV MYSQL_MODULE=/camunda/modules/mysql/${MYSQL_ARTIFACT}/main \
     POSTGRESQL_MODULE=/camunda/modules/org/postgresql/${POSTGRESQL_ARTIFACT}/main
 
-# wildfly settings
+# jboss settings
 ENV PREPEND_JAVA_OPTS="-Djboss.bind.address=0.0.0.0 -Djboss.bind.address.management=0.0.0.0" \
     LAUNCH_JBOSS_IN_BACKGROUND=TRUE
 

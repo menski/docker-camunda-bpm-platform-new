@@ -6,9 +6,9 @@ env:
     global:
         - VERSION=7.4.0
         - SERVER=wildlfy
-        - BUILD=camundawildfly_camunda-h2
+        - BUILD=camundajboss_camunda-h2
         - IMAGE=menski/camunda-bpm-platform-new
-        - COMPOSE_PROJECT_NAME=camunda-wildfly
+        - COMPOSE_PROJECT_NAME=camunda-jboss
 
 services:
     - docker
