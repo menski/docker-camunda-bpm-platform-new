@@ -24,19 +24,21 @@ script:
     # start and test h2 image
     - docker-compose up -d camunda-h2
     - ./test-container.sh
-    - docker-compose kill
+    - docker-compose stop
     - docker-compose rm -f
 
     # start and test postgresql image
+    - docker-compose up -d postgresql && sleep 3
     - docker-compose up -d camunda-postgresql
     - ./test-container.sh
-    - docker-compose kill
+    - docker-compose stop
     - docker-compose rm -f
 
     # start and test mysql image
+    - docker-compose up -d mysql && sleep 3
     - docker-compose up -d camunda-mysql
     - ./test-container.sh
-    - docker-compose kill
+    - docker-compose stop
     - docker-compose rm -f
 
     # tag images

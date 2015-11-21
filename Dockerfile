@@ -41,7 +41,7 @@ WORKDIR /camunda
 RUN tar xzf /tmp/camunda-bpm-platform.tar.gz -C /camunda/ --wildcards --strip 2 server/*
 
 # download mysql driver
-ADD ${NEXUS}&g=${MYSQL_GROUP}&a=${MYSQL_ARTIFACT}&v=${MYSQL_VERSION}&p=jar /camunda/lib/
+ADD ${NEXUS}&g=${MYSQL_GROUP}&a=${MYSQL_ARTIFACT}&v=${MYSQL_VERSION}&p=jar /camunda/lib/${MYSQL_ARTIFACT}-${MYSQL_VERSION}.jar
 
 # download postgresl driver
-ADD ${NEXUS}&g=${POSTGRESQL_GROUP}&a=${POSTGRESQL_ARTIFACT}&v=${POSTGRESQL_VERSION}&p=jar /camunda/lib/
+ADD ${NEXUS}&g=${POSTGRESQL_GROUP}&a=${POSTGRESQL_ARTIFACT}&v=${POSTGRESQL_VERSION}&p=jar /camunda/lib/${POSTGRESQL_ARTIFACT}-${POSTGRESQL_VERSION}.jar

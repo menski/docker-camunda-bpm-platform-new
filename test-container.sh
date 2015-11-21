@@ -6,7 +6,7 @@ function check_container_running {
 
     echo "$container: Check container state"
 
-    [ "$running" != "true" ] && echo "$container: Container is not running"  && return 1
+    [ "$running" != "true" ] && (echo "$container: Container is not running"; return 1)
 
     echo "$container: Container is running"
 }
@@ -27,7 +27,7 @@ function wait_for_deployment {
         fi
     done
 
-    return 1
+    return 2
 }
 
 function test_login {
@@ -37,7 +37,7 @@ function test_login {
     echo "$app: Test login"
 
     curl --fail -s --retry $retries --retry-delay $wait_time  --data 'username=demo&password=demo' -D- -o/dev/null http://localhost:8080/camunda/api/admin/auth/user/default/login/${app} || \
-        ( echo "$app: Login failed (abort)"; return 2)
+        (echo "$app: Login failed (abort)"; return 3)
 
     echo "$app: Login successful"
 }
