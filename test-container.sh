@@ -1,4 +1,10 @@
 #!/bin/bash -e
+#
+# Test script to verify container is working correctly
+#   - test that the container is started
+#   - test that the deployment of the invoice process archive is successful
+#   - test that the webapp login is working
+#
 
 function check_container_running {
     local container=${1:-camunda}

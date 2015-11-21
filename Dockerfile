@@ -10,7 +10,8 @@ RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" > /e
     apt-get update && \
     apt-get -y install --no-install-recommends oracle-java8-installer xmlstarlet ca-certificates && \
     apt-get clean && \
-    rm -rf /var/cache/* /var/lib/apt/lists/*
+    rm -rf /var/cache/* /var/lib/apt/lists/* /tmp/* && \
+    rm -rf $(find /usr/lib/jvm/java-8-oracle/ -mindepth 1 -maxdepth 1 ! -name jre)
 
 # add start script
 ADD start-camunda.sh /bin/
