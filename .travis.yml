@@ -7,7 +7,7 @@ env:
         - VERSION=7.4.0
         - SERVER=tomcat
         - BUILD=camunda_camunda-h2
-        - IMAGE=menski/test-travis-docker
+        - IMAGE=menski/camunda-bpm-platform-new
         - COMPOSE_PROJECT_NAME=camunda
 
 services:

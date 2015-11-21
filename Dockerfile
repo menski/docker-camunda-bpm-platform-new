@@ -1,5 +1,8 @@
 FROM ubuntu:14.04
 
+# set berlin timezone
+ENV TZ=Europe/Berlin
+
 # install oracle java and xmlstarlet
 RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" > /etc/apt/sources.list.d/oracle-jdk.list && \
     apt-key adv --recv-keys --keyserver keyserver.ubuntu.com EEA14886 && \
