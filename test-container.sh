@@ -1,5 +1,16 @@
 #!/bin/bash -e
 
+function check_container_running {
+    local container=${1:-camunda}
+    local running=$(docker inspect --format="{{ .State.Running }}" $container)
+
+    echo "$container: Check container state"
+
+    [ "$running" != "true" ] && echo "$container: Container is not running"  && return 1
+
+    echo "$container: Container is running"
+}
+
 function wait_for_deployment {
     local retries=${1:-20}
     local wait_time=${2:-3}
@@ -30,6 +41,9 @@ function test_login {
 
     echo "$app: Login successful"
 }
+
+# check container state
+check_container_running
 
 # poll log for deployment summary
 wait_for_deployment
