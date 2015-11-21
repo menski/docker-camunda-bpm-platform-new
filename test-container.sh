@@ -23,7 +23,7 @@ function wait_for_deployment {
 
     echo -n "deploy: Grep log for deployment summary"
     for retry in $(seq $retries); do
-        docker logs camunda 2>&1 | grep -q "ENGINE-08023 Deployment summary for process archive 'camunda-invoice'" && \
+        docker logs camunda 2>&1 | grep -q "Deployment summary for process archive 'camunda-invoice' of process application 'camunda-invoice'" && \
             echo -e "\033[2K\rdeploy: Deployment summary found ($retry/$retries)" && return 0
         if [ $retry -lt $retries ]; then
             echo -en "\033[2K\rdeploy: Deployment summary not found will wait for $wait_time seconds and retry ($retry/$retries)"
@@ -42,7 +42,7 @@ function test_login {
     local wait_time=${3:-3}
     echo -n "webapp: Test $app login"
 
-    curl --fail -s --retry $retries --retry-delay $wait_time  --data 'username=demo&password=demo' -o/dev/null http://localhost:8080/camunda/api/admin/auth/user/default/login/${app} || \
+    curl --fail -s --retry $retries --retry-delay $wait_time --header "Accept: application/json" --data 'username=demo&password=demo' -o/dev/null http://localhost:8080/camunda/api/admin/auth/user/default/login/${app} || \
         (echo -e "\033[2K\rwebapp: Login $app failed (abort)"; return 3)
 
     echo -e "\033[2K\rwebapp: Login $app successful"

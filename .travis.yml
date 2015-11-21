@@ -5,10 +5,10 @@ sudo: required
 env:
     global:
         - VERSION=7.4.0
-        - SERVER=tomcat
-        - BUILD=camunda_camunda-h2
+        - SERVER=wildlfy
+        - BUILD=camundawildfly_camunda-h2
         - IMAGE=menski/camunda-bpm-platform-new
-        - COMPOSE_PROJECT_NAME=camunda
+        - COMPOSE_PROJECT_NAME=camunda-wildfly
 
 services:
     - docker

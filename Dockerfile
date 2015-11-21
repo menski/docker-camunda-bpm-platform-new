@@ -36,8 +36,8 @@ CMD ["/bin/start-camunda.sh"]
 # nexus to download artifacts
 ENV NEXUS=https://app.camunda.com/nexus/service/local/artifact/maven/content?r=public \
 # camunda artifact
-    GROUP=org.camunda.bpm.tomcat \
-    ARTIFACT=camunda-bpm-tomcat \
+    GROUP=org.camunda.bpm.wildfly \
+    ARTIFACT=camunda-bpm-wildfly \
     VERSION=7.4.0-SNAPSHOT \
 # mysql artifact
     MYSQL_GROUP=mysql \
@@ -48,6 +48,14 @@ ENV NEXUS=https://app.camunda.com/nexus/service/local/artifact/maven/content?r=p
     POSTGRESQL_ARTIFACT=postgresql \
     POSTGRESQL_VERSION=9.3-1102-jdbc4
 
+# wildfly modules
+ENV MYSQL_MODULE=/camunda/modules/mysql/${MYSQL_ARTIFACT}/main \
+    POSTGRESQL_MODULE=/camunda/modules/org/postgresql/${POSTGRESQL_ARTIFACT}/main
+
+# wildfly settings
+ENV PREPEND_JAVA_OPTS="-Djboss.bind.address=0.0.0.0 -Djboss.bind.address.management=0.0.0.0" \
+    LAUNCH_JBOSS_IN_BACKGROUND=TRUE
+
 # download camunda distro
 ADD ${NEXUS}&g=${GROUP}&a=${ARTIFACT}&v=${VERSION}&p=tar.gz /tmp/camunda-bpm-platform.tar.gz
 
@@ -55,8 +63,16 @@ ADD ${NEXUS}&g=${GROUP}&a=${ARTIFACT}&v=${VERSION}&p=tar.gz /tmp/camunda-bpm-pla
 WORKDIR /camunda
 RUN tar xzf /tmp/camunda-bpm-platform.tar.gz -C /camunda/ --wildcards --strip 2 server/*
 
+# prepare mysqsl and postgresql modules
+ADD database-module.xml /tmp/database-module.xml
+RUN mkdir -p ${MYSQL_MODULE} ${POSTGRESQL_MODULE} && \
+    cp -v /tmp/database-module.xml ${MYSQL_MODULE}/module.xml && \
+    mv -v /tmp/database-module.xml ${POSTGRESQL_MODULE}/module.xml && \
+    sed -i "s/%GROUP%/${MYSQL_GROUP}/g; s/%ARTIFACT%/${MYSQL_ARTIFACT}/g; s/%VERSION%/${MYSQL_VERSION}/g" ${MYSQL_MODULE}/module.xml && \
+    sed -i "s/%GROUP%/${POSTGRESQL_GROUP}/g; s/%ARTIFACT%/${POSTGRESQL_ARTIFACT}/g; s/%VERSION%/${POSTGRESQL_VERSION}/g" ${POSTGRESQL_MODULE}/module.xml
+
 # download mysql driver
-ADD ${NEXUS}&g=${MYSQL_GROUP}&a=${MYSQL_ARTIFACT}&v=${MYSQL_VERSION}&p=jar /camunda/lib/${MYSQL_ARTIFACT}-${MYSQL_VERSION}.jar
+ADD ${NEXUS}&g=${MYSQL_GROUP}&a=${MYSQL_ARTIFACT}&v=${MYSQL_VERSION}&p=jar ${MYSQL_MODULE}/${MYSQL_ARTIFACT}-${MYSQL_VERSION}.jar
 
 # download postgresl driver
-ADD ${NEXUS}&g=${POSTGRESQL_GROUP}&a=${POSTGRESQL_ARTIFACT}&v=${POSTGRESQL_VERSION}&p=jar /camunda/lib/${POSTGRESQL_ARTIFACT}-${POSTGRESQL_VERSION}.jar
+ADD ${NEXUS}&g=${POSTGRESQL_GROUP}&a=${POSTGRESQL_ARTIFACT}&v=${POSTGRESQL_VERSION}&p=jar ${POSTGRESQL_MODULE}/${POSTGRESQL_ARTIFACT}-${POSTGRESQL_VERSION}.jar
