@@ -3,13 +3,19 @@ FROM debian:latest
 # set berlin timezone
 ENV TZ=Europe/Berlin
 
-# install tools
-RUN apt-get update && \
-    apt-get -y install --no-install-recommends curl xmlstarlet ca-certificates && \
-    apt-get clean && \
-    rm -rf /var/cache/* /var/lib/apt/lists/*
+# expose http port
+EXPOSE 8080
 
-# intall oracle jre
+# add start script
+ADD start-camunda.sh /bin/
+
+# start command
+CMD ["/bin/start-camunda.sh"]
+
+# location of camunda distro
+WORKDIR /camunda
+
+# java environment
 ENV JAVA_VERSION_MAJOR=8 \
     JAVA_VERSION_MINOR=66 \
     JAVA_VERSION_BUILD=17 \
@@ -18,22 +24,20 @@ ENV JAVA_VERSION_MAJOR=8 \
 
 ENV PATH ${JAVA_HOME}/bin:${PATH}
 
+# install tools
+RUN apt-get update && \
+    apt-get -y install --no-install-recommends curl xmlstarlet ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/cache/* /var/lib/apt/lists/*
+
+# intall oracle jre
 RUN cd /tmp && \
-    curl -jkSLH "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz | tar xzf - && \
+    curl -jSLH "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz | tar xzf - && \
     mkdir -p $JAVA_HOME && \
     mv jdk1.${JAVA_VERSION_MAJOR}.0_${JAVA_VERSION_MINOR}/jre/* ${JAVA_HOME}/ && \
     rm -rf /tmp/*
 
-# add start script
-ADD start-camunda.sh /bin/
-
-# expose http port
-EXPOSE 8080
-
-# start command
-CMD ["/bin/start-camunda.sh"]
-
-# nexus to download artifacts
+# camunda and database driver artifacts
 ENV NEXUS=https://app.camunda.com/nexus/service/local/artifact/maven/content?r=public \
 # camunda artifact
     GROUP=org.camunda.bpm.tomcat \
@@ -48,15 +52,7 @@ ENV NEXUS=https://app.camunda.com/nexus/service/local/artifact/maven/content?r=p
     POSTGRESQL_ARTIFACT=postgresql \
     POSTGRESQL_VERSION=9.3-1102-jdbc4
 
-# download camunda distro
-ADD ${NEXUS}&g=${GROUP}&a=${ARTIFACT}&v=${VERSION}&p=tar.gz /tmp/camunda-bpm-platform.tar.gz
-
-# unpack camunda distro
-WORKDIR /camunda
-RUN tar xzf /tmp/camunda-bpm-platform.tar.gz -C /camunda/ --wildcards --strip 2 server/*
-
-# download mysql driver
-ADD ${NEXUS}&g=${MYSQL_GROUP}&a=${MYSQL_ARTIFACT}&v=${MYSQL_VERSION}&p=jar /camunda/lib/${MYSQL_ARTIFACT}-${MYSQL_VERSION}.jar
-
-# download postgresl driver
-ADD ${NEXUS}&g=${POSTGRESQL_GROUP}&a=${POSTGRESQL_ARTIFACT}&v=${POSTGRESQL_VERSION}&p=jar /camunda/lib/${POSTGRESQL_ARTIFACT}-${POSTGRESQL_VERSION}.jar
+# download camunda distro and database drivers
+RUN curl -jkSL "${NEXUS}&g=${GROUP}&a=${ARTIFACT}&v=${VERSION}&p=tar.gz" | tar xzf - -C /camunda/ --wildcards --strip 2 server/* && \
+    curl -jSL "${NEXUS}&g=${MYSQL_GROUP}&a=${MYSQL_ARTIFACT}&v=${MYSQL_VERSION}&p=jar" -o "/camunda/lib/${MYSQL_ARTIFACT}-${MYSQL_VERSION}.jar" && \
+    curl -jSL "${NEXUS}&g=${POSTGRESQL_GROUP}&a=${POSTGRESQL_ARTIFACT}&v=${POSTGRESQL_VERSION}&p=jar" -o "/camunda/lib/${POSTGRESQL_ARTIFACT}-${POSTGRESQL_VERSION}.jar"
