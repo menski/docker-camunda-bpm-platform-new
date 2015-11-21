@@ -15,7 +15,7 @@ services:
 
 before_script:
     # build image
-    - docker-compose build camunda-h2
+    - docker-compose build
     # display images
     - docker images
 

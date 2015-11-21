@@ -3,15 +3,26 @@ FROM ubuntu:14.04
 # set berlin timezone
 ENV TZ=Europe/Berlin
 
-# install oracle java and xmlstarlet
-RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" > /etc/apt/sources.list.d/oracle-jdk.list && \
-    apt-key adv --recv-keys --keyserver keyserver.ubuntu.com EEA14886 && \
-    echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
-    apt-get update && \
-    apt-get -y install --no-install-recommends oracle-java8-installer xmlstarlet ca-certificates && \
+# install tools
+RUN apt-get update && \
+    apt-get -y install --no-install-recommends curl xmlstarlet ca-certificates && \
     apt-get clean && \
-    rm -rf /var/cache/* /var/lib/apt/lists/* /tmp/* && \
-    rm -rf $(find /usr/lib/jvm/java-8-oracle/ -mindepth 1 -maxdepth 1 ! -name jre)
+    rm -rf /var/cache/* /var/lib/apt/lists/*
+
+# intall oracle jre
+ENV JAVA_VERSION_MAJOR=8 \
+    JAVA_VERSION_MINOR=66 \
+    JAVA_VERSION_BUILD=17 \
+    JAVA_PACKAGE=server-jre \
+    JAVA_HOME=/jre
+
+ENV PATH ${JAVA_HOME}/bin:${PATH}
+
+RUN cd /tmp && \
+    curl -jkSLH "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz | tar xzf - && \
+    mkdir -p $JAVA_HOME && \
+    mv jdk1.${JAVA_VERSION_MAJOR}.0_${JAVA_VERSION_MINOR}/jre/* ${JAVA_HOME}/ && \
+    rm -rf /tmp/*
 
 # add start script
 ADD start-camunda.sh /bin/

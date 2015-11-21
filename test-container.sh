@@ -42,8 +42,8 @@ function test_login {
     local wait_time=${3:-3}
     echo -n "webapp: Test $app login"
 
-    curl --fail -s --retry $retries --retry-delay $wait_time  --data 'username=demo&password=demo' -Dheader.log -o/dev/null http://localhost:8080/camunda/api/admin/auth/user/default/login/${app} || \
-        (echo -e "\033[2K\rwebapp: Login $app failed (abort)"; cat header.log; return 3)
+    curl --fail -s --retry $retries --retry-delay $wait_time  --data 'username=demo&password=demo' -o/dev/null http://localhost:8080/camunda/api/admin/auth/user/default/login/${app} || \
+        (echo -e "\033[2K\rwebapp: Login $app failed (abort)"; return 3)
 
     echo -e "\033[2K\rwebapp: Login $app successful"
 }
