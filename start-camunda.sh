@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 DB_DRIVER=${DB_DRIVER:-org.h2.Driver}
 DB_URL=${DB_URL:-jdbc:h2:./camunda-h2-dbs/process-engine;MVCC=TRUE;TRACE_LEVEL_FILE=0;DB_CLOSE_ON_EXIT=FALSE}
@@ -18,7 +18,7 @@ if [ -z "$SKIP_DB_CONFIG" ]; then
     -u "${XML_URL}" -v "${DB_URL}" \
     -u "${XML_USERNAME}" -v "${DB_USERNAME}" \
     -u "${XML_PASSWORD}" -v "${DB_PASSWORD}" \
-    ${SERVER_CONFIG}
+    /camunda/conf/server.xml
 fi
 
 exec /camunda/bin/catalina.sh run
