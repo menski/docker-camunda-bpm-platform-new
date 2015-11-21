@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/sh -e
 
 DB_DRIVER=${DB_DRIVER:-org.h2.Driver}
 DB_URL=${DB_URL:-jdbc:h2:./camunda-h2-dbs/process-engine;MVCC=TRUE;TRACE_LEVEL_FILE=0;DB_CLOSE_ON_EXIT=FALSE}
