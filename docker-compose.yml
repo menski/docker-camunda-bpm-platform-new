@@ -34,6 +34,42 @@ camunda-mysql:
     links:
         - mysql:db
 
+camunda-ee:
+    image: camunda-bpm-platform:ee
+    container_name: camunda
+    ports:
+        - "8080:8080"
+    environment:
+        - JAVA_OPTS=-Djava.security.egd=file:/dev/./urandom
+
+camunda-ee-postgresql:
+    image: camunda-bpm-platform:ee
+    container_name: camunda
+    ports:
+        - "8080:8080"
+    environment:
+        - JAVA_OPTS=-Djava.security.egd=file:/dev/./urandom
+        - DB_DRIVER=org.postgresql.Driver
+        - DB_URL=jdbc:postgresql://db:5432/camunda
+        - DB_USERNAME=camunda
+        - DB_PASSWORD=camunda
+    links:
+        - postgresql:db
+
+camunda-ee-mysql:
+    image: camunda-bpm-platform:ee
+    container_name: camunda
+    ports:
+        - "8080:8080"
+    environment:
+        - JAVA_OPTS=-Djava.security.egd=file:/dev/./urandom
+        - DB_DRIVER=com.mysql.jdbc.Driver
+        - DB_URL=jdbc:mysql://db:3306/process-engine
+        - DB_USERNAME=camunda
+        - DB_PASSWORD=camunda
+    links:
+        - mysql:db
+
 postgresql:
     image: postgres
     environment:

@@ -7,7 +7,9 @@ env:
         - VERSION=7.4.0
         - SERVER=tomcat
         - BUILD=camunda_camunda-h2
+        - BUILD_EE=camunda-bpm-platform:ee
         - IMAGE=menski/camunda-bpm-platform-new
+        - IMAGE_EE=registry.camunda.com/camunda-bpm-platform
         - COMPOSE_PROJECT_NAME=camunda
 
 services:
@@ -16,6 +18,8 @@ services:
 before_script:
     # build image
     - docker-compose build
+    # build ee image
+    - docker build -f Dockerfile.ee --build-arg NEXUS_USERNAME="$NEXUS_USERNAME" --build-arg NEXUS_PASSWORD="$NEXUS_PASSWORD" -t $BUILD_EE .
     # display images
     - docker images
 
@@ -41,20 +45,63 @@ script:
     - docker-compose stop
     - docker-compose rm -f
 
+    # start and test ee h2 image
+    - docker-compose up -d camunda-ee
+    - ./test-container.sh
+    - docker-compose stop
+    - docker-compose rm -f
+
+    # start and test ee postgresql image
+    - docker-compose up -d postgresql && sleep 30
+    - docker-compose up -d camunda-ee-postgresql
+    - ./test-container.sh
+    - docker-compose stop
+    - docker-compose rm -f
+
+    # start and test ee mysql image
+    - docker-compose up -d mysql && sleep 30
+    - docker-compose up -d camunda-ee-mysql
+    - ./test-container.sh
+    - docker-compose stop
+    - docker-compose rm -f
+
+after_success:
     # tag images
     - docker tag $BUILD $IMAGE:SNAPSHOT
     - docker tag $BUILD $IMAGE:$VERSION-SNAPSHOT
     - docker tag $BUILD $IMAGE:$SERVER-SNAPSHOT
     - docker tag $BUILD $IMAGE:$SERVER-$VERSION-SNAPSHOT
 
+    # tag ee images
+    - docker tag $BUILD $IMAGE_EE:SNAPSHOT
+    - docker tag $BUILD $IMAGE_EE:$VERSION-SNAPSHOT
+    - docker tag $BUILD $IMAGE_EE:$SERVER-SNAPSHOT
+    - docker tag $BUILD $IMAGE_EE:$SERVER-$VERSION-SNAPSHOT
+    - docker tag $BUILD_EE $IMAGE_EE:ee-SNAPSHOT
+    - docker tag $BUILD_EE $IMAGE_EE:$VERSION-ee-SNAPSHOT
+    - docker tag $BUILD_EE $IMAGE_EE:$SERVER-ee-SNAPSHOT
+    - docker tag $BUILD_EE $IMAGE_EE:$SERVER-$VERSION-ee-SNAPSHOT
+
     # display images
     - docker images
 
-after_success:
     # login to docker hub
     - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-    # push images
+    # push images to docker hub
     - docker push $IMAGE:SNAPSHOT
     - docker push $IMAGE:$VERSION-SNAPSHOT
     - docker push $IMAGE:$SERVER-SNAPSHOT
     - docker push $IMAGE:$SERVER-$VERSION-SNAPSHOT
+
+    # login in to private registry
+    - docker login -e="$PRIVATE_EMAIL" -u="$PRIVATE_USERNAME" -p="$PRIVATE_PASSWORD" registry.camunda.com
+
+    # push images to private regsitry
+    - docker push $IMAGE_EE:SNAPSHOT
+    - docker push $IMAGE_EE:$VERSION-SNAPSHOT
+    - docker push $IMAGE_EE:$SERVER-SNAPSHOT
+    - docker push $IMAGE_EE:$SERVER-$VERSION-SNAPSHOT
+    - docker push $IMAGE_EE:ee-SNAPSHOT
+    - docker push $IMAGE_EE:$VERSION-ee-SNAPSHOT
+    - docker push $IMAGE_EE:$SERVER-ee-SNAPSHOT
+    - docker push $IMAGE_EE:$SERVER-$VERSION-ee-SNAPSHOT
