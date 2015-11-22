@@ -42,8 +42,6 @@ script:
     - docker-compose rm -f
 
     # tag images
-    - docker tag $BUILD $IMAGE:SNAPSHOT
-    - docker tag $BUILD $IMAGE:$VERSION-SNAPSHOT
     - docker tag $BUILD $IMAGE:$SERVER-SNAPSHOT
     - docker tag $BUILD $IMAGE:$SERVER-$VERSION-SNAPSHOT
 
@@ -54,7 +52,5 @@ after_success:
     # login to docker hub
     - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
     # push images
-    - docker push $IMAGE:SNAPSHOT
-    - docker push $IMAGE:$VERSION-SNAPSHOT
     - docker push $IMAGE:$SERVER-SNAPSHOT
     - docker push $IMAGE:$SERVER-$VERSION-SNAPSHOT
