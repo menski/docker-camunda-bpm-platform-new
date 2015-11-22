@@ -17,8 +17,27 @@ function check_container_running {
     echo -e "\033[2K\rstatus: Container $container is running"
 }
 
-function wait_for_deployment {
-    local retries=${1:-20}
+function wait_for_platform_start {
+    local retries=${1:-40}
+    local wait_time=${2:-3}
+
+    echo -n " start: Grep log for platform start message"
+    for retry in $(seq $retries); do
+        docker logs camunda 2>&1 | grep -q "ENGINE-08048 Camunda BPM platform sucessfully started" && \
+            echo -e "\033[2K\r start: Camunda BPM platform sucessfully started ($retry/$retries)" && return 0
+        if [ $retry -lt $retries ]; then
+            echo -en "\033[2K\r start: Camunda BPM platform not startetd wait for $wait_time seconds and retry ($retry/$retries)"
+            sleep $wait_time
+        else
+            echo -e "\033[2K\r start: Camunda BPM platform not startetd ($retry/$retries - abort)"
+        fi
+    done
+
+    return 2
+}
+
+function wait_for_deployment_summary {
+    local retries=${1:-40}
     local wait_time=${2:-3}
 
     echo -n "deploy: Grep log for deployment summary"
@@ -29,7 +48,7 @@ function wait_for_deployment {
             echo -en "\033[2K\rdeploy: Deployment summary not found will wait for $wait_time seconds and retry ($retry/$retries)"
             sleep $wait_time
         else
-            echo -e "\033[2K\rdeploy: Deployment summary not found (abort)"
+            echo -e "\033[2K\rdeploy: Deployment summary not found ($retry/$retries - abort)"
         fi
     done
 
@@ -51,8 +70,9 @@ function test_login {
 # check container state
 check_container_running
 
-# poll log for deployment summary
-wait_for_deployment
+# poll log for platform start and deployment summary
+wait_for_platform_start
+wait_for_deployment_summary
 
 # test webapp logins
 test_login cockpit

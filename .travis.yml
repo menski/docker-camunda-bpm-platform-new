@@ -23,21 +23,21 @@ before_script:
 script:
     # start and test h2 image
     - docker-compose up -d camunda-h2
-    - ./test-container.sh
+    - ./test-container.sh || (docker logs camunda; exit 1)
     - docker-compose stop
     - docker-compose rm -f
 
     # start and test postgresql image
-    - docker-compose up -d postgresql && sleep 5
+    - docker-compose up -d postgresql && sleep 30
     - docker-compose up -d camunda-postgresql
-    - ./test-container.sh
+    - ./test-container.sh || (docker logs camunda; exit 1)
     - docker-compose stop
     - docker-compose rm -f
 
     # start and test mysql image
-    - docker-compose up -d mysql && sleep 20
+    - docker-compose up -d mysql && sleep 30
     - docker-compose up -d camunda-mysql
-    - ./test-container.sh
+    - ./test-container.sh || (docker logs camunda; exit 1)
     - docker-compose stop
     - docker-compose rm -f
 

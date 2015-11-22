@@ -3,6 +3,8 @@ camunda-h2:
     container_name: camunda
     ports:
         - "8080:8080"
+    environment:
+        - JAVA_OPTS=-Djava.security.egd=file:/dev/./urandom
 
 camunda-postgresql:
     build: .
@@ -10,6 +12,7 @@ camunda-postgresql:
     ports:
         - "8080:8080"
     environment:
+        - JAVA_OPTS=-Djava.security.egd=file:/dev/./urandom
         - DB_DRIVER=org.postgresql.Driver
         - DB_URL=jdbc:postgresql://db:5432/camunda
         - DB_USERNAME=camunda
@@ -23,6 +26,7 @@ camunda-mysql:
     ports:
         - "8080:8080"
     environment:
+        - JAVA_OPTS=-Djava.security.egd=file:/dev/./urandom
         - DB_DRIVER=com.mysql.jdbc.Driver
         - DB_URL=jdbc:mysql://db:3306/process-engine
         - DB_USERNAME=camunda
