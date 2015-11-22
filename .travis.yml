@@ -5,7 +5,7 @@ sudo: required
 env:
     global:
         - VERSION=7.4.0
-        - SERVER=wildlfy
+        - SERVER=jboss
         - BUILD=camundajboss_camunda-h2
         - IMAGE=menski/camunda-bpm-platform-new
         - COMPOSE_PROJECT_NAME=camunda-jboss
