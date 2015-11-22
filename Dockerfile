@@ -9,9 +9,6 @@ EXPOSE 8080
 # add start script
 ADD start-camunda.sh /bin/
 
-# start command
-CMD ["/bin/start-camunda.sh"]
-
 # location of camunda distro
 WORKDIR /camunda
 
@@ -72,3 +69,6 @@ RUN cd /tmp && \
     curl -jSL "${NEXUS}&g=${MYSQL_GROUP}&a=${MYSQL_ARTIFACT}&v=${MYSQL_VERSION}&p=jar" -o "/camunda/lib/${MYSQL_ARTIFACT}-${MYSQL_VERSION}.jar" && \
     curl -jSL "${NEXUS}&g=${POSTGRESQL_GROUP}&a=${POSTGRESQL_ARTIFACT}&v=${POSTGRESQL_VERSION}&p=jar" -o "/camunda/lib/${POSTGRESQL_ARTIFACT}-${POSTGRESQL_VERSION}.jar" && \
     rm -rf /tmp/*
+
+# start command
+CMD ["/bin/start-camunda.sh"]
